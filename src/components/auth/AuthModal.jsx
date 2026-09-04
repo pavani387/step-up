@@ -26,6 +26,9 @@ export default function AuthModal() {
     setUserProfile,
     verifyGoogleAccount,
     setIsGoogleModalOpen,
+    setIsDetailsSetupOpen,
+    setIsAuthenticated,
+    isAuthenticated,
     showToast,
     triggerCelebration
   } = useApp();
@@ -84,6 +87,9 @@ export default function AuthModal() {
     e.preventDefault();
     if (otpInput === generatedOtp || otpInput === '123456') {
       // Verified successfully
+      setIsAuthenticated(true);
+      localStorage.setItem('stepup_is_authenticated', JSON.stringify(true));
+
       if (selectedRole === 'student') {
         setUserProfile((prev) => ({
           ...prev,
@@ -97,10 +103,15 @@ export default function AuthModal() {
       }
 
       triggerCelebration();
-      showToast('Email Verified & Signed In! 🚀', `Welcome, Pavani (${emailInput})`, 'success');
+      showToast('Email Verified & Signed In! 🚀', `Welcome! Please complete your profile details.`, 'success');
       setIsAuthModalOpen(false);
       setOtpSent(false);
       setOtpInput('');
+
+      // Immediately prompt user to update/complete their profile!
+      setTimeout(() => {
+        setIsDetailsSetupOpen(true);
+      }, 500);
     } else {
       setOtpError('Invalid OTP code. Please enter the 6-digit code sent to your Gmail.');
     }
@@ -109,6 +120,9 @@ export default function AuthModal() {
   // Password Submit
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
+    setIsAuthenticated(true);
+    localStorage.setItem('stepup_is_authenticated', JSON.stringify(true));
+
     if (selectedRole === 'student') {
       setUserProfile((prev) => ({
         ...prev,
@@ -120,13 +134,21 @@ export default function AuthModal() {
       switchRole('company');
     }
     triggerCelebration();
-    showToast('Logged In Successfully! 🚀', `Welcome back to StepUp!`, 'success');
+    showToast('Logged In Successfully! 🚀', `Welcome! Please update your profile details.`, 'success');
     setIsAuthModalOpen(false);
+
+    // Immediately prompt user to update profile details!
+    setTimeout(() => {
+      setIsDetailsSetupOpen(true);
+    }, 500);
   };
 
   // Confirm Microsoft OAuth Authorization
   const handleConfirmMicrosoftAuth = () => {
     setActiveOAuthModal(null);
+    setIsAuthenticated(true);
+    localStorage.setItem('stepup_is_authenticated', JSON.stringify(true));
+
     if (selectedRole === 'student') {
       setUserProfile((prev) => ({
         ...prev,
@@ -140,11 +162,19 @@ export default function AuthModal() {
     triggerCelebration();
     showToast('Microsoft Account Authorized! 💻', 'Connected via Microsoft Identity OAuth 2.0', 'success');
     setIsAuthModalOpen(false);
+
+    // Prompt user to update profile details!
+    setTimeout(() => {
+      setIsDetailsSetupOpen(true);
+    }, 500);
   };
 
   // Confirm LinkedIn OAuth Authorization
   const handleConfirmLinkedInAuth = () => {
     setActiveOAuthModal(null);
+    setIsAuthenticated(true);
+    localStorage.setItem('stepup_is_authenticated', JSON.stringify(true));
+
     if (selectedRole === 'student') {
       setUserProfile((prev) => ({
         ...prev,
@@ -158,6 +188,11 @@ export default function AuthModal() {
     triggerCelebration();
     showToast('LinkedIn Profile Authorized! 💼', 'Connected via LinkedIn OAuth 2.0', 'success');
     setIsAuthModalOpen(false);
+
+    // Prompt user to update profile details!
+    setTimeout(() => {
+      setIsDetailsSetupOpen(true);
+    }, 500);
   };
 
   return (

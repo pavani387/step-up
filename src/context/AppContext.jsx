@@ -18,7 +18,14 @@ export function AppProvider({ children }) {
   // Navigation & Role
   const [activeTab, setActiveTab] = useState('home');
   const [currentRole, setCurrentRole] = useState('student'); // 'student' | 'company' | 'admin'
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const saved = localStorage.getItem('stepup_is_authenticated');
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(() => {
+    const saved = localStorage.getItem('stepup_is_authenticated');
+    return saved ? !JSON.parse(saved) : true; // Automatically asks Student or Employer on first visit!
+  });
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
@@ -28,16 +35,16 @@ export function AppProvider({ children }) {
   const [isDetailsSetupOpen, setIsDetailsSetupOpen] = useState(false);
   const [isGoogleVerified, setIsGoogleVerified] = useState(() => {
     const saved = localStorage.getItem('stepup_google_verified');
-    return saved ? JSON.parse(saved) : true;
+    return saved ? JSON.parse(saved) : false;
   });
   const [googleAccount, setGoogleAccount] = useState(() => {
     const saved = localStorage.getItem('stepup_google_account');
     return saved ? JSON.parse(saved) : {
-      email: 'pavs.aids@psgtech.edu',
-      name: 'Pavs',
+      email: 'kondreddypavani081@gmail.com',
+      name: 'Pavani Kondreddy',
       picture: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
       verifiedAt: 'Sep 2026',
-      oauthProvider: 'Google Security Services (OAuth 2.0)'
+      oauthProvider: 'Google Identity Services (OAuth 2.0)'
     };
   });
 
@@ -459,8 +466,10 @@ export function AppProvider({ children }) {
   // Google Account Verification Handler
   const verifyGoogleAccount = (accountData, promptDetailsSetup = true) => {
     setIsGoogleVerified(true);
+    setIsAuthenticated(true);
     setGoogleAccount(accountData);
     localStorage.setItem('stepup_google_verified', JSON.stringify(true));
+    localStorage.setItem('stepup_is_authenticated', JSON.stringify(true));
     localStorage.setItem('stepup_google_account', JSON.stringify(accountData));
 
     // Update user profile email & avatar if candidate
@@ -478,11 +487,21 @@ export function AppProvider({ children }) {
     showToast('Google Account Verified! 🛡️', `Connected securely as ${accountData.email}`, 'success');
     setIsGoogleModalOpen(false);
 
+    // Prompt user to update profile details immediately!
     if (promptDetailsSetup) {
       setTimeout(() => {
         setIsDetailsSetupOpen(true);
       }, 500);
     }
+  };
+
+  const logoutUser = () => {
+    setIsAuthenticated(false);
+    setIsGoogleVerified(false);
+    localStorage.setItem('stepup_is_authenticated', JSON.stringify(false));
+    localStorage.setItem('stepup_google_verified', JSON.stringify(false));
+    setIsAuthModalOpen(true);
+    showToast('Logged Out', 'Please identify your account type to sign in.', 'info');
   };
 
   const disconnectGoogleAccount = () => {
@@ -496,6 +515,9 @@ export function AppProvider({ children }) {
     setActiveTab,
     currentRole,
     switchRole,
+    isAuthenticated,
+    setIsAuthenticated,
+    logoutUser,
     isAuthModalOpen,
     setIsAuthModalOpen,
     authMode,
