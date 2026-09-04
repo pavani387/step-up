@@ -181,6 +181,27 @@ export default function GoogleVerificationModal() {
             </div>
           ) : !isCustomMode ? (
             <>
+              {/* Quick option to enter any custom email on this device */}
+              <button
+                onClick={() => setIsCustomMode(true)}
+                className="w-full px-4 py-3 bg-blue-50/60 hover:bg-blue-100/60 border-b border-blue-100 transition-colors flex items-center justify-between group text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#1A73E8] text-white flex items-center justify-center shrink-0">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900 group-hover:text-[#1A73E8]">
+                      Sign in with your own Google email
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Type your Gmail or college email ID
+                    </div>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-[#1A73E8]">Enter Email →</span>
+              </button>
+
               {/* Account list items matching media_1788367337459.png */}
               {googleAccounts.map((acc) => (
                 <button

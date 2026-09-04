@@ -862,12 +862,12 @@ export const RECRUITER_CANDIDATES = [
   },
   {
     id: 'cand_004',
-    name: 'Pavs (You)',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-    email: 'pavs.aids@psgtech.edu',
+    name: 'Kavya Reddy',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
+    email: 'kavya.r@nitw.ac.in',
     phone: '+91 98765 43210',
-    college: 'PSG College of Technology',
-    degree: 'B.Tech AI & DS',
+    college: 'NIT Warangal',
+    degree: 'B.Tech Data Science',
     batch: 2026,
     cgpa: 8.8,
     skills: ['Python', 'SQL', 'Power BI', 'Machine Learning', 'Pandas'],
@@ -875,7 +875,7 @@ export const RECRUITER_CANDIDATES = [
     appliedJob: 'Data Analyst — University Graduate',
     status: 'Interview',
     assessmentScore: 96,
-    resumeSnippet: 'Winner of 2nd place in Microsoft AI Hackathon. Published ML researcher on edge inference.'
+    resumeSnippet: 'Winner of National Data Analytics Hackathon. Published ML researcher on edge inference.'
   },
   {
     id: 'cand_005',
