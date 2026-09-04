@@ -8,8 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist/*
-!dist/standalone.html
+# dist (tracked so Streamlit Cloud can serve pre-built app)
 dist-ssr
 *.local
 
