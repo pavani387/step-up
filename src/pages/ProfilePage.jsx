@@ -22,11 +22,17 @@ import {
   Edit3,
   Globe,
   Link2,
-  Camera
+  Camera,
+  MapPin,
+  Briefcase
 } from 'lucide-react';
 
 export default function ProfilePage() {
   const {
+    currentRole,
+    companyProfile,
+    jobs,
+    setActiveTab,
     userProfile,
     setUserProfile,
     uploadUserPhoto,
@@ -144,6 +150,163 @@ export default function ProfilePage() {
     if (type.includes('Competition') || type.includes('Badge')) return '🥇';
     return '🚀';
   };
+
+  // If in Recruiter role, render the Recruiter & Company Profile!
+  if (currentRole === 'company') {
+    const companyJobs = jobs.filter((j) =>
+      j.company?.toLowerCase().includes(companyProfile.companyName.toLowerCase())
+    );
+
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in">
+        {/* Recruiter & Company Hero */}
+        <div className="p-8 sm:p-10 rounded-3xl bg-white border border-[#E6E9F0] shadow-sm relative overflow-hidden">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-purple-50 p-4 border-2 border-purple-200 shadow-md flex items-center justify-center shrink-0">
+                <img
+                  src={companyProfile.companyLogo}
+                  alt={companyProfile.companyName}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl sm:text-3xl font-black text-[#101936]">
+                    {companyProfile.name}
+                  </h1>
+                  <span className="px-2.5 py-0.5 rounded-full bg-purple-50 text-[#7B3FF2] text-xs font-extrabold border border-purple-200">
+                    Recruiter Profile
+                  </span>
+                </div>
+                <p className="text-sm font-bold text-[#2563FF]">
+                  {companyProfile.companyName} • Campus Talent Acquisition Lead
+                </p>
+                <p className="text-xs text-[#64708A] flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400" /> {companyProfile.location} • {companyProfile.industry}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setActiveTab('company')}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#7B3FF2] to-[#2563FF] text-white text-xs font-extrabold shadow-md shadow-purple-500/20 hover:opacity-95 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Post New Job Opening</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('company')}
+                className="px-4 py-2.5 rounded-xl border border-[#E6E9F0] hover:bg-slate-50 text-xs font-bold text-[#101936] transition-all flex items-center gap-2"
+              >
+                <Briefcase className="w-4 h-4 text-[#7B3FF2]" />
+                <span>Go to Recruiter Hub</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Company Overview & Hiring Metrics Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left 2 Cols: Company Info & Jobs */}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="p-8 rounded-3xl bg-white border border-[#E6E9F0] shadow-sm space-y-4">
+              <h2 className="text-lg font-black text-[#101936] flex items-center gap-2">
+                <Building className="w-5 h-5 text-[#7B3FF2]" />
+                <span>About {companyProfile.companyName}</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-[#64708A] leading-relaxed">
+                {companyProfile.description}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100 text-xs">
+                <div>
+                  <span className="text-[#64708A] font-medium block">Official Website</span>
+                  <a
+                    href={companyProfile.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[#2563FF] font-bold hover:underline flex items-center gap-1 mt-0.5"
+                  >
+                    {companyProfile.website} <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+                <div>
+                  <span className="text-[#64708A] font-medium block">Recruiting Email</span>
+                  <span className="text-[#101936] font-bold block mt-0.5">{companyProfile.email}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Company Job Postings */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E6E9F0] shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-black text-[#101936] flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-[#2563FF]" />
+                  <span>Active Job Postings ({companyJobs.length})</span>
+                </h2>
+                <button
+                  onClick={() => setActiveTab('company')}
+                  className="text-xs font-bold text-[#2563FF] hover:underline"
+                >
+                  Manage in Recruiter Hub →
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {companyJobs.slice(0, 4).map((job) => (
+                  <div
+                    key={job.id}
+                    className="p-4 rounded-2xl bg-[#F7F8FC] border border-[#E6E9F0] flex items-center justify-between"
+                  >
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-extrabold text-[#101936]">{job.title}</h4>
+                      <p className="text-[11px] text-[#64708A]">
+                        {job.location} • {job.salary} • {job.jobType}
+                      </p>
+                    </div>
+                    <span className="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-700 font-extrabold text-xs border border-emerald-200">
+                      Active
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Col: Recruiter Identity Card */}
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-[#E6E9F0] shadow-sm space-y-4">
+              <h3 className="text-sm font-black text-[#101936]">Recruiter Identity</h3>
+              <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 space-y-3">
+                <div>
+                  <div className="text-xs font-bold text-slate-800">{companyProfile.name}</div>
+                  <div className="text-[11px] text-[#7B3FF2] font-semibold">
+                    {companyProfile.companyName} Campus Hiring
+                  </div>
+                  <div className="text-[11px] text-slate-500">{companyProfile.email}</div>
+                  <div className="text-[11px] text-slate-500">{companyProfile.phone}</div>
+                </div>
+                <div className="pt-2 border-t border-purple-200/60 flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-slate-700">Verification</span>
+                  <span className="font-black text-emerald-700">Verified Partner ✓</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveTab('company')}
+                className="w-full py-2.5 rounded-xl bg-[#0C1435] text-white text-xs font-bold hover:bg-slate-800 transition-colors"
+              >
+                Open Candidate Pipeline
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

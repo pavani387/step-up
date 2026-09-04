@@ -27,6 +27,7 @@ export default function Sidebar({ isOpen, onClose }) {
     currentRole,
     switchRole,
     userProfile,
+    companyProfile,
     uploadUserPhoto,
     isGoogleVerified,
     setIsGoogleModalOpen,
@@ -54,11 +55,11 @@ export default function Sidebar({ isOpen, onClose }) {
     { id: 'home', label: 'Home', icon: Home },
     { id: 'jobs', label: 'Find Jobs', icon: Briefcase, badge: applications.length },
     { id: 'learning', label: 'Learning Roadmaps', icon: BookOpen },
-    { id: 'indemand', label: 'In-Demand Skills', icon: Flame, highlight: true },
-    { id: 'assignments', label: 'Assessments', icon: FileCode2 },
-    { id: 'dashboard', label: 'Candidate Dashboard', icon: LayoutDashboard },
-    { id: 'company', label: currentRole === 'company' ? 'Recruiter Hub' : 'Companies', icon: Building2 },
-    { id: 'profile', label: 'My Profile & Proof', icon: User }
+    { id: 'indemand', label: 'In-Demand Skills', icon: Flame, badge: 'Hot' },
+    { id: 'assignments', label: 'Assessments & Sandbox', icon: Code },
+    { id: 'dashboard', label: 'Candidate Dashboard', icon: BarChart3 },
+    { id: 'company', label: 'Companies & Recruiter', icon: Building2 },
+    { id: 'profile', label: 'My Profile & Proof', icon: UserCheck }
   ];
 
   const handleItemClick = (id) => {
@@ -116,7 +117,7 @@ export default function Sidebar({ isOpen, onClose }) {
                   {isGoogleVerified && <CheckCircle2 className="w-3 h-3 text-[#10B981]" />}
                 </div>
                 <div className="text-[10px] text-[#64708A] truncate">
-                  {isGoogleVerified ? userProfile.email : 'Click to connect Google'}
+                  {currentRole === 'student' ? userProfile.email : companyProfile.email}
                 </div>
               </div>
             </div>
@@ -138,40 +139,28 @@ export default function Sidebar({ isOpen, onClose }) {
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all group ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
                   isActive
                     ? 'bg-gradient-to-r from-[#2563FF] to-[#7B3FF2] text-white shadow-md shadow-blue-500/20'
-                    : 'text-[#64708A] hover:text-[#101936] hover:bg-slate-100/80'
+                    : 'text-[#64708A] hover:text-[#101936] hover:bg-[#F7F8FC]'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon
-                    className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                      isActive
-                        ? 'text-white'
-                        : item.highlight
-                        ? 'text-amber-500'
-                        : 'text-slate-400 group-hover:text-[#2563FF]'
-                    }`}
-                  />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#64708A]'}`} />
                   <span>{item.label}</span>
                 </div>
 
                 {item.badge !== undefined && (
                   <span
-                    className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
                       isActive
                         ? 'bg-white/20 text-white'
-                        : 'bg-slate-200 text-[#101936]'
+                        : item.badge === 'Hot'
+                        ? 'bg-rose-100 text-rose-600'
+                        : 'bg-slate-100 text-slate-700'
                     }`}
                   >
                     {item.badge}
-                  </span>
-                )}
-
-                {item.highlight && !isActive && (
-                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
-                    Hot
                   </span>
                 )}
               </button>
@@ -179,76 +168,121 @@ export default function Sidebar({ isOpen, onClose }) {
           })}
         </div>
 
-        {/* Bottom: User Photo & Profile with Instant Upload Capability */}
+        {/* Bottom: Profile widget customized per role */}
         <div className="p-4 border-t border-[#E6E9F0] bg-[#F7F8FC]/60 space-y-3">
-          {/* User Photo & Info Card */}
-          <div className="p-3 rounded-2xl bg-white border border-[#E6E9F0] shadow-2xs flex items-center gap-3">
-            {/* Clickable Photo Avatar with Camera Overlay */}
-            <div className="relative group shrink-0">
-              <img
-                src={userProfile.avatar}
-                alt={userProfile.name}
-                className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[#2563FF]/30 shadow-xs group-hover:opacity-80 transition-opacity"
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white"
-                title="Click to upload your photo"
-              >
-                <Camera className="w-4 h-4" />
-              </button>
+          {currentRole === 'student' ? (
+            /* CANDIDATE / STUDENT PROFILE CARD */
+            <>
+              <div className="p-3 rounded-2xl bg-white border border-[#E6E9F0] shadow-2xs flex items-center gap-3">
+                {/* Clickable Photo Avatar with Camera Overlay */}
+                <div className="relative group shrink-0">
+                  <img
+                    src={userProfile.avatar}
+                    alt={userProfile.name}
+                    className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[#2563FF]/30 shadow-xs group-hover:opacity-80 transition-opacity"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white"
+                    title="Click to upload your photo"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
 
-              {/* Verified Mini Badge */}
-              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#10B981] border border-white flex items-center justify-center text-white text-[9px] font-bold">
-                ✓
-              </span>
-            </div>
+                  <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#10B981] border border-white flex items-center justify-center text-white text-[9px] font-bold">
+                    ✓
+                  </span>
+                </div>
 
-            {/* Hidden File Input for Direct Local Photo Upload */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              className="hidden"
-            />
+                {/* Hidden File Input for Direct Local Photo Upload */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
 
-            {/* Name & Academic info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <div
-                  onClick={() => handleItemClick('profile')}
-                  className="text-xs font-black text-[#101936] hover:text-[#2563FF] cursor-pointer truncate"
-                >
-                  {userProfile.name}
+                {/* Name & Academic info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <div
+                      onClick={() => handleItemClick('profile')}
+                      className="text-xs font-black text-[#101936] hover:text-[#2563FF] cursor-pointer truncate"
+                    >
+                      {userProfile.name}
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-[#7B3FF2] font-semibold truncate">
+                    {userProfile.degree} ({userProfile.department ? userProfile.department.split(' ')[0] : 'AI&DS'})
+                  </div>
+                  <div className="text-[10px] text-[#64708A] truncate">
+                    {userProfile.college ? userProfile.college.split(' ')[0] : 'Tech'} • CGPA {userProfile.cgpa}
+                  </div>
                 </div>
               </div>
-              <div className="text-[10px] text-[#7B3FF2] font-semibold truncate">
-                {userProfile.degree} ({userProfile.department.split(' ')[0]})
-              </div>
-              <div className="text-[10px] text-[#64708A] truncate">
-                {userProfile.college.split(' ')[0]} • CGPA {userProfile.cgpa}
-              </div>
-            </div>
-          </div>
 
-          {/* 1-Click Upload Photo & Setup Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="px-2.5 py-1.5 rounded-xl border border-dashed border-[#2563FF] hover:bg-blue-50 text-[11px] font-extrabold text-[#2563FF] transition-all flex items-center justify-center gap-1 shadow-2xs"
-            >
-              <Upload className="w-3 h-3" />
-              <span>Upload Photo</span>
-            </button>
-            <button
-              onClick={() => setIsDetailsSetupOpen(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-[#101936] transition-all flex items-center justify-center gap-1"
-            >
-              <span>Edit Details</span>
-            </button>
-          </div>
+              {/* 1-Click Upload Photo & Setup Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-2.5 py-1.5 rounded-xl border border-dashed border-[#2563FF] hover:bg-blue-50 text-[11px] font-extrabold text-[#2563FF] transition-all flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                >
+                  <Upload className="w-3 h-3" />
+                  <span>Upload Photo</span>
+                </button>
+                <button
+                  onClick={() => setIsDetailsSetupOpen(true)}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-[#101936] transition-all flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>Edit Details</span>
+                </button>
+              </div>
+            </>
+          ) : (
+            /* RECRUITER / EMPLOYER PROFILE CARD */
+            <>
+              <div className="p-3 rounded-2xl bg-white border border-purple-200/80 shadow-2xs flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl p-2 bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0">
+                  <img
+                    src={companyProfile.companyLogo}
+                    alt={companyProfile.companyName}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div
+                    onClick={() => handleItemClick('company')}
+                    className="text-xs font-black text-[#101936] hover:text-[#7B3FF2] cursor-pointer truncate"
+                  >
+                    {companyProfile.name}
+                  </div>
+                  <div className="text-[10px] text-[#7B3FF2] font-semibold truncate">
+                    {companyProfile.companyName} • Talent Lead
+                  </div>
+                  <div className="text-[10px] text-[#64708A] truncate">
+                    {companyProfile.location}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleItemClick('company')}
+                  className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#7B3FF2] to-[#2563FF] text-white text-[11px] font-extrabold transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer"
+                >
+                  <span>Post a Job ➕</span>
+                </button>
+                <button
+                  onClick={() => handleItemClick('company')}
+                  className="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-[11px] font-bold text-[#7B3FF2] transition-all flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>Recruiter Hub</span>
+                </button>
+              </div>
+            </>
+          )}
 
           {/* Quick Role Switcher */}
           <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px]">
