@@ -148,11 +148,11 @@ export function AppProvider({ children }) {
   // User Profile Photo Upload
   const uploadUserPhoto = (photoDataUrl) => {
     setUserProfile((prev) => {
-      const updated = { ...prev, avatar: photoDataUrl };
+      const updated = { ...prev, avatar: photoDataUrl, hasCustomAvatar: true };
       localStorage.setItem('stepup_user_profile', JSON.stringify(updated));
       return updated;
     });
-    showToast('Profile Photo Updated! 📷', 'Your new photo has been updated across your profile and job applications.', 'success');
+    showToast('Profile Photo Updated! 📷', 'Your new photo is now visible across your profile, sidebar, and applications.', 'success');
   };
 
   const removeToast = (id) => {
@@ -472,15 +472,20 @@ export function AppProvider({ children }) {
     localStorage.setItem('stepup_is_authenticated', JSON.stringify(true));
     localStorage.setItem('stepup_google_account', JSON.stringify(accountData));
 
-    // Update user profile email & avatar if candidate
+    // Update user profile email & avatar if candidate (preserving user-uploaded photo)
     if (currentRole === 'student') {
-      setUserProfile((prev) => ({
-        ...prev,
-        name: accountData.name || prev.name,
-        email: accountData.email || prev.email,
-        avatar: accountData.picture || prev.avatar,
-        profileCompletion: Math.min(100, prev.profileCompletion + 10)
-      }));
+      setUserProfile((prev) => {
+        const isCustomPhoto = prev.hasCustomAvatar || (prev.avatar && prev.avatar.startsWith('data:'));
+        const updated = {
+          ...prev,
+          name: accountData.name || prev.name,
+          email: accountData.email || prev.email,
+          avatar: isCustomPhoto ? prev.avatar : (accountData.picture || prev.avatar),
+          profileCompletion: Math.min(100, prev.profileCompletion + 10)
+        };
+        localStorage.setItem('stepup_user_profile', JSON.stringify(updated));
+        return updated;
+      });
     }
 
     triggerCelebration();

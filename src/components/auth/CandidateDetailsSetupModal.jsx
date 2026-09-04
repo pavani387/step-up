@@ -24,6 +24,7 @@ export default function CandidateDetailsSetupModal() {
     setIsDetailsSetupOpen,
     userProfile,
     setUserProfile,
+    uploadUserPhoto,
     googleAccount,
     triggerCelebration,
     showToast,
@@ -33,11 +34,11 @@ export default function CandidateDetailsSetupModal() {
   const [currentStep, setCurrentStep] = useState(1); // 1: Personal, 2: Academics, 3: Skills & Career, 4: Links
   const setupPhotoInputRef = React.useRef(null);
 
-  // Form State
+  // Form State - always prioritize user's actual photo
   const [formData, setFormData] = useState({
-    name: googleAccount?.name || userProfile.name,
-    avatar: googleAccount?.picture || userProfile.avatar,
-    email: googleAccount?.email || userProfile.email,
+    name: userProfile.name || googleAccount?.name || 'Pavani Kondreddy',
+    avatar: userProfile.avatar || googleAccount?.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+    email: userProfile.email || googleAccount?.email || 'kondreddypavani081@gmail.com',
     phone: userProfile.phone || '+91 98765 43210',
     location: userProfile.location || 'Bengaluru / Coimbatore',
     college: userProfile.college || 'PSG College of Technology',
@@ -52,13 +53,24 @@ export default function CandidateDetailsSetupModal() {
     hackerrank: userProfile.hackerrank || 'https://hackerrank.com/pavs_ai'
   });
 
+  // Sync avatar if updated in userProfile
+  React.useEffect(() => {
+    if (userProfile?.avatar) {
+      setFormData((prev) => ({ ...prev, avatar: userProfile.avatar }));
+    }
+  }, [userProfile?.avatar]);
+
   const handleSetupPhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          setFormData((prev) => ({ ...prev, avatar: event.target.result }));
+          const photoData = event.target.result;
+          setFormData((prev) => ({ ...prev, avatar: photoData }));
+          if (uploadUserPhoto) {
+            uploadUserPhoto(photoData);
+          }
         }
       };
       reader.readAsDataURL(file);
